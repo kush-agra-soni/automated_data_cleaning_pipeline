@@ -1,0 +1,9 @@
+pandas
+scikit-learn
+numpy
+polars                    # For ultra-fast DataFrame ops (swap with pandas when scaling)
+pyarrow                   # For lightning-fast file IO + Parquet
+openpyxl                  # Enables reading Excel files (.xlsx)
+python-dotenv             # For managing config in `.env` files
+loguru                   # Drop-in logging upgrade with sexy syntax
+psycopg2-binary
