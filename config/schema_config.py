@@ -1,28 +1,49 @@
-# config/schema_config.py
+import pandas as pd
+from typing import List, Tuple
 
-NUMERICAL_COLUMNS = [
-    "Social_media_followers",
-    # Add more numerical columns here
-]
+# Threshold for dropping rows with excessive missing data
+ROW_DROP_NAN_THRESHOLD = 0.5
 
-CATEGORICAL_COLUMNS = [
-    "Genre",
-    # Add more categorical columns here
-]
+# Auto-schema placeholders (used in pipeline if dynamic inference is on)
+NUMERICAL_COLUMNS: List[str] = []
+CATEGORICAL_COLUMNS: List[str] = []
+IDENTIFIER_COLUMNS: List[str] = []
+DATE_COLUMNS: List[str] = []
 
-TARGET_COLUMN = "Sold_out"  # Update if your target changes
 
-# Threshold to drop rows with too many missing values
-ROW_DROP_NAN_THRESHOLD = 0.75
+def infer_schema(df: pd.DataFrame, sample_size: int = 10) -> Tuple[List[str], List[str], List[str], List[str]]:
+    numerical = []
+    categorical = []
+    identifier = []
+    date_cols = []
 
-# Imputation strategies
-IMPUTATION_STRATEGY = {
-    "numerical": "mean",
-    "categorical": "most_frequent"
-}
+    sample = df.head(sample_size)
+    for col in sample.columns:
+        col_lower = col.strip().lower()
 
-# Scaling options (can be expanded to minmax, robust, etc.)
-SCALING_STRATEGY = "standard"  # Only 'standard' is supported for now
+        if "id" in col_lower:
+            identifier.append(col)
+            continue
 
-# Encoding options
-ENCODING_STRATEGY = "onehot"  # Can extend to ordinal or label encoding
+        # Attempt to parse date columns
+        try:
+            parsed = pd.to_datetime(sample[col], errors="coerce")
+            if parsed.notna().sum() > 0:
+                date_cols.append(col)
+                continue
+        except Exception:
+            pass
+
+        if pd.api.types.is_numeric_dtype(sample[col]):
+            numerical.append(col)
+        elif pd.api.types.is_string_dtype(sample[col]) or sample[col].dtype == "object":
+            categorical.append(col)
+
+    return numerical, categorical, identifier, date_cols
+
+
+def load_and_infer_schema(file_path: str):
+    global NUMERICAL_COLUMNS, CATEGORICAL_COLUMNS, IDENTIFIER_COLUMNS, DATE_COLUMNS
+    df = pd.read_csv(file_path)
+    NUMERICAL_COLUMNS, CATEGORICAL_COLUMNS, IDENTIFIER_COLUMNS, DATE_COLUMNS = infer_schema(df)
+    return df
