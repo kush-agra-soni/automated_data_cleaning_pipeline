@@ -1,4 +1,4 @@
-# core/loader.py
+# For manual data injection
 
 import pandas as pd
 import os
@@ -23,7 +23,7 @@ def load_file(file_path: str) -> pd.DataFrame:
     return df
 
 
-# Optional placeholder for scheduled DB ingestion
+# For scheduled DB ingestion
 def load_from_database(query: str, connection) -> pd.DataFrame:
     """
     Example usage:
