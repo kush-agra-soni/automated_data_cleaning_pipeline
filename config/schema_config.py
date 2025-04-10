@@ -1,5 +1,6 @@
 import pandas as pd
 from typing import List, Tuple
+import warnings
 
 # Threshold for dropping rows with excessive missing data
 ROW_DROP_NAN_THRESHOLD = 0.5
@@ -29,11 +30,30 @@ def infer_schema(df: pd.DataFrame, sample_size: int = 10) -> Tuple[List[str], Li
         if col_data.empty:
             continue
 
-        # Attempt date detection
-        parsed_dates = pd.to_datetime(col_data, errors="coerce", dayfirst=True)
+                # If numeric, skip date parsing
+        try:
+            numeric_vals = col_data.astype(float)
+            if all(x.is_integer() for x in numeric_vals):
+                df[col] = pd.to_numeric(df[col], errors="coerce")
+                df[col] = df[col].astype("Int64")
+                numerical.append(col)
+                continue
+            else:
+                numerical.append(col)
+                continue
+        except:
+            pass  # Not numeric, continue to date check
+
+              # Attempt date detection with warning suppressed
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            parsed_dates = pd.to_datetime(col_data, errors="coerce", dayfirst=True)
+
         if parsed_dates.notna().sum() >= len(col_data) * 0.6:
             date_cols.append(col)
             continue
+
+
 
         # Boolean detection (common patterns)
         bool_like = col_data.astype(str).str.lower().isin(["yes", "no", "true", "false", "0", "1"])
@@ -41,12 +61,14 @@ def infer_schema(df: pd.DataFrame, sample_size: int = 10) -> Tuple[List[str], Li
             categorical.append(col)
             continue
 
-        # Distinguish between int and float accurately
+
+        # Distinguish between int and float
         try:
-            numeric_vals = pd.to_numeric(col_data, errors="coerce")
-            if numeric_vals.dropna().apply(float.is_integer).all():
+            numeric_vals = col_data.astype(float)
+            if all(x.is_integer() for x in numeric_vals):
+                df[col] = pd.to_numeric(df[col], errors="coerce")
+                df[col] = df[col].astype("Int64")
                 numerical.append(col)
-                df[col] = numeric_vals.astype("Int64")
             else:
                 numerical.append(col)
         except:
