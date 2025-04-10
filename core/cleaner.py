@@ -14,7 +14,11 @@ def detect_and_print_column_types(df: pd.DataFrame):
         elif col in numerical:
             column_types[col] = f"numerical({dtype})"
         elif col in categorical:
-            column_types[col] = f"categorical({dtype})"
+            unique_vals = df[col].dropna().astype(str).str.lower().unique()
+            if set(unique_vals).issubset({"yes", "no", "true", "false", "0", "1"}):
+                column_types[col] = f"categorical(boolean)"
+            else:
+                column_types[col] = f"categorical({dtype})"
         elif col in date_cols:
             column_types[col] = f"date column(datetime)"
         else:
