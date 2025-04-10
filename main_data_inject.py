@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from core.loader import load_file
-from core.cleaner import clean_dataframe
+from core.cleaner import detect_and_print_column_types  # Import more functions if needed
 
 def run_file_selector():
     root = tk.Tk()
@@ -23,8 +23,11 @@ if __name__ == "__main__":
         print(">--No file selected. Exiting.--<")
         exit(1)
 
-    df = load_file(file_path)
-    cleaned_df = clean_dataframe(df)
+    df = load_file(file_path)  # Load using loader
+    detect_and_print_column_types(df)  # Call your cleaner function
 
-    print("\n>--Cleaned Data Preview--<\n")
-    print(cleaned_df.head(55))
+    # 👉 If you want to use more functions from cleaner.py
+    # from core.cleaner import clean_column_names, drop_high_nan_rows, ... etc.
+    # Then call them one by one like:
+    # df = clean_column_names(df)
+    # df = drop_high_nan_rows(df)
