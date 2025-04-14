@@ -56,9 +56,9 @@ def choose_method_and_run(python_exec):
 
     choice = input("\nEnter (1) or (2): ").strip()
     if choice == "1":
-        entry_script = os.path.join("methods", "main_data_inject.py")
+        entry_script = os.path.join("methods", "data_inject.py")
     elif choice == "2":
-        entry_script = os.path.join("methods", "main_schedule_inject.py")
+        entry_script = os.path.join("methods", "schedule_inject.py")
     else:
         print("⚠ Invalid choice. Exiting.")
         sys.exit(1)
