@@ -6,8 +6,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import tkinter as tk
 from tabulate import tabulate
 from tkinter import filedialog
-from core.1_loader import load_file
-from core.2_detector import detection
+from core.loader_1 import load_file
+from core.detector_2 import detection
 
 
 def select_file():
