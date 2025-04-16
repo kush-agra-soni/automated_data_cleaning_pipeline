@@ -1,12 +1,10 @@
 import os
-import pandas as pd
+import pandas as pd # type: ignore
 
 SUPPORTED_FORMATS = ['.csv', '.json', '.xlsx']
 
 def load_file(file_path: str) -> pd.DataFrame:
-    """Loads a file into a pandas DataFrame 
-    based on its extension, raising ValueError
-    for unsupported formats."""
+    """Load data from a file into a pandas DataFrame."""
     ext = os.path.splitext(file_path)[1].lower()
 
     if ext not in SUPPORTED_FORMATS:
