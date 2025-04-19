@@ -6,8 +6,8 @@ import tkinter as tk
 from tabulate import tabulate # type: ignore
 from tkinter import filedialog
 from core.loader_1 import load_file
-from core.detector_2 import detection
-from core.cleaner_3 import Cleaning
+from core._2_detector import detection
+from core._3_cleaner import Cleaning
 
 
 def select_file():

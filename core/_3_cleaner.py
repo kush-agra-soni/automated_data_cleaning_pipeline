@@ -1,6 +1,6 @@
 import re
 import pandas as pd                                      # type:ignore
-from core.detector_2 import detection
+from core._2_detector import detection
 
 class Cleaning:
     def remove_special_characters(self, dataframe: pd.DataFrame):
