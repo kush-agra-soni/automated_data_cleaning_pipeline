@@ -30,7 +30,8 @@ def detection(dataframe):
         for val in str_values:
             try:
                 parsed = parse(val, fuzzy=False, dayfirst=True)
-                # Count only if original string has '-' or '/' to avoid numeric misclassification
+                ''' Count only if original string has '-' or '/' 
+                to avoid numeric misclassification'''
                 if any(sep in val for sep in ['-', '/']):
                     date_like_count += 1
             except Exception:
@@ -55,5 +56,4 @@ def detection(dataframe):
         column_types[column] = 'str'
 
     return dataframe, column_types
-
 
