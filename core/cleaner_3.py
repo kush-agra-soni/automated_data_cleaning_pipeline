@@ -27,6 +27,16 @@ class Cleaning:
         print("replace_space_with_underscore_in_columns ✅")
         return dataframe
 
+    def remove_empty_columns(self, dataframe: pd.DataFrame):
+        dataframe = dataframe.dropna(axis=1, how='all')
+        print("remove_empty_columns ✅")
+        return dataframe
+
+    def remove_empty_rows(self, dataframe: pd.DataFrame):
+        dataframe = dataframe.dropna(axis=0, how='all')
+        print("remove_empty_rows ✅")
+        return dataframe
+
     def identifier_column_remover(self, dataframe: pd.DataFrame, identifier_keywords: list = ['id', 'identifier']):
         _, column_types = detection(dataframe)
         columns_to_drop = [
@@ -44,46 +54,7 @@ class Cleaning:
         print("identifier_column_remover ✅")
         return dataframe
 
-    def remove_empty_columns(self, dataframe: pd.DataFrame):
-        dataframe = dataframe.dropna(axis=1, how='all')
-        print("remove_empty_columns ✅")
-        return dataframe
-
-    def remove_empty_rows(self, dataframe: pd.DataFrame):
-        dataframe = dataframe.dropna(axis=0, how='all')
-        print("remove_empty_rows ✅")
-        return dataframe
-
     def remove_duplicates(self, dataframe: pd.DataFrame):
-        dataframe = dataframe.drop_duplicates()
+        dataframe = dataframe.drop_duplicates().reset_index(drop=True)
         print("remove_duplicates ✅")
-        return dataframe
-
-    def extract_dates(self, dataframe: pd.DataFrame, date_format: str = None):
-        time_only_pattern = re.compile(r'^\d{2}:\d{2}:\d{2}$')
-
-        for column in dataframe.select_dtypes(include=['object']).columns:
-            try:
-                # Check if it's a time-only column based on the first few values
-                sample = dataframe[column].dropna().astype(str).head(5)
-                if sample.str.match(time_only_pattern).all():
-                    continue  # Skip time-only columns
-
-                # Parse potential date columns
-                parsed_dates = pd.to_datetime(dataframe[column], errors='coerce', format=date_format)
-
-                # Only extract if parsing is somewhat successful
-                if not parsed_dates.isna().all():
-                    dataframe[f"{column}_day"] = parsed_dates.dt.day
-                    dataframe[f"{column}_month"] = parsed_dates.dt.month
-                    dataframe[f"{column}_year"] = parsed_dates.dt.year
-
-            except Exception as e:
-                print(f"Error processing column {column}: {e}")
-
-        return dataframe
-    
-    
-
-
-
+        return dataframe        
