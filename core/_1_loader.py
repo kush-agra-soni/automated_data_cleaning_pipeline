@@ -1,5 +1,5 @@
 import os
-import pandas as pd # type: ignore
+import pandas as pd
 
 SUPPORTED_FORMATS = ['.csv', '.json', '.xlsx']
 
