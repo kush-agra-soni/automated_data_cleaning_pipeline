@@ -5,9 +5,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import tkinter as tk
 from tabulate import tabulate # type: ignore
 from tkinter import filedialog
-from core.loader_1 import load_file
-from core._2_detector import detection
-from core._3_cleaner import Cleaning
+from core._1_loader import load_file
+from core._2_detector import datadetector
+from core._3_cleaner import cleaning
+from core._4_standardizer import standardizer
 
 
 def select_file():
@@ -26,30 +27,34 @@ def process_file(file_path):
 
     try:
         dataframe = load_file(file_path)
-        dataframe, final_column_types = detection(dataframe)
-        print(tabulate([[col, dtype] for col, dtype in final_column_types.items()], 
-                      headers=["Column Name", "Detected Data Type"], tablefmt="grid"))
-        dataframe = apply_all_cleaning_methods(dataframe)
-        print(dataframe.head(15))
+        print("Before detection:")
+        print(dataframe.info())
+
+        detector = datadetector()
+        dataframe, column_types = detector.detection(dataframe)
+
+        print("After detection:")
+        print(dataframe.info())
+
+        # dataframe = run_cleaning(dataframe)
+        # dataframe = run_standardizer(dataframe)
     except Exception as e:
         print(f"Error: {e}")
 
 
-def apply_all_cleaning_methods(dataframe):
+def run_cleaning(dataframe):
     """Apply all cleaning methods from the Cleaning class to the DataFrame."""
-    cleaner = Cleaning()
-    dataframe = cleaner.remove_special_characters(dataframe)
-    dataframe = cleaner.convert_to_lowercase(dataframe)
-    dataframe = cleaner.remove_whitespace(dataframe)
-    dataframe = cleaner.replace_space_with_underscore(dataframe)
-    dataframe = cleaner.identifier_column_remover(dataframe)
-    dataframe = cleaner.remove_empty_columns(dataframe)
-    dataframe = cleaner.remove_empty_rows(dataframe)
-    dataframe = cleaner.remove_duplicates(dataframe)
-    dataframe = cleaner.extract_dates(dataframe)
+    cleaner = cleaning()
+    dataframe = cleaner.run_cleaning(dataframe)
     print(dataframe.head(15))
     return dataframe
 
+
+def run_standardizer(df):
+    standardizer_instance = standardizer()
+    df = standardizer_instance.format_all(df)
+    print(df.to_string())  # Preview the standardized DataFrame
+    return df
 
 
 def main():
