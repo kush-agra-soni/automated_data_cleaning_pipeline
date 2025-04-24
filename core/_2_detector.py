@@ -7,12 +7,13 @@ class datadetector:
         self.time_pattern = re.compile(r'^\d{2}:\d{2}:\d{2}$')  # HH:MM:SS format
 
     def detect_time_column(self, dataframe):
-        """Detect columns with time format (xx:xx:xx) and typecast them as datetime."""
+        """Detect columns with time format (xx:xx:xx) and typecast them as time-only."""
         for column in dataframe.columns:
             str_values = dataframe[column].dropna().astype(str).str.strip()
             if str_values.str.match(self.time_pattern).all():
-                dataframe[column] = pd.to_datetime(dataframe[column], format='%H:%M:%S', errors='coerce')
-                print(f"Column '{column}' detected as time and typecasted to datetime.")
+                dataframe[column] = pd.to_datetime(dataframe[column], format='%H:%M:%S', errors='coerce').dt.time
+                dataframe[column] = dataframe[column].astype('string')  # Ensure dtype is string to avoid showing dates
+                print(f"Column '{column}' detected as time and typecasted to time-only.")
         return dataframe
 
     def detect_column_type(self, dataframe, column):
