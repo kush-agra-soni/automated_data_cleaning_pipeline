@@ -29,14 +29,16 @@ def process_file(file_path):
         dataframe = load_file(file_path)
         print("Before detection:")
         print(dataframe.info())
+        print(dataframe.to_string())
 
         detector = datadetector()
         dataframe, column_types = detector.detection(dataframe)
 
         print("After detection:")
         print(dataframe.info())
+        print(dataframe.to_string())
 
-        # dataframe = run_cleaning(dataframe)
+        dataframe = run_cleaning(dataframe)
         # dataframe = run_standardizer(dataframe)
     except Exception as e:
         print(f"Error: {e}")
@@ -46,7 +48,7 @@ def run_cleaning(dataframe):
     """Apply all cleaning methods from the Cleaning class to the DataFrame."""
     cleaner = cleaning()
     dataframe = cleaner.run_cleaning(dataframe)
-    print(dataframe.head(15))
+    print(dataframe.to_string())
     return dataframe
 
 
