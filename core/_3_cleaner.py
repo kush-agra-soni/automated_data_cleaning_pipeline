@@ -1,7 +1,12 @@
-import re
 import pandas as pd                      
 
 class cleaning:
+    def standardize_empty_cells(self, dataframe: pd.DataFrame):
+        """Standardize all variations of empty cells to pd.NA for consistency."""
+        dataframe = dataframe.applymap(lambda x: pd.NA if pd.isna(x) else x)
+        print("standardize_empty_cells")
+        return dataframe
+
     def remove_special_characters(self, dataframe: pd.DataFrame):
         """Remove special characters from column names only."""
         dataframe.columns = dataframe.columns.str.replace(r'[^a-zA-Z0-9_]', ' ',  regex=True)
@@ -32,7 +37,8 @@ class cleaning:
         return dataframe
 
     def remove_empty_rows(self, dataframe: pd.DataFrame):
-        dataframe = dataframe.dropna(axis=0, how='all')
+        """Remove rows where all values are missing, considering all representations of missing values."""
+        dataframe = dataframe.loc[~dataframe.isnull().all(axis=1)]
         print("remove_empty_rows")
         return dataframe
 
@@ -55,6 +61,7 @@ class cleaning:
 
     def run_cleaning(self, dataframe: pd.DataFrame):
         """Apply all cleaning methods in sequence to the DataFrame."""
+        dataframe = self.standardize_empty_cells(dataframe)
         dataframe = self.remove_special_characters(dataframe)
         dataframe = self.convert_to_lowercase(dataframe)
         dataframe = self.remove_whitespace(dataframe)
